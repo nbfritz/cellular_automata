@@ -4,6 +4,7 @@ module CellularAutomata
   class LifeTest < Minitest::Test
     def test_birth
       assert_transition(
+        3, 2,
         <<~SEED,
           OO.
           O..
@@ -17,6 +18,7 @@ module CellularAutomata
 
     def test_stability
       assert_transition(
+        3, 2,
         <<~SEED,
           OO.
           OO.
@@ -30,6 +32,7 @@ module CellularAutomata
 
     def test_overcrowding
       assert_transition(
+        3, 2,
         <<~SEED,
           OOO
           OOO
@@ -43,6 +46,7 @@ module CellularAutomata
 
     def test_underpopulation
       assert_transition(
+        3, 2,
         <<~SEED,
           .O.
           .O.
@@ -56,6 +60,7 @@ module CellularAutomata
 
     def test_blinker
       assert_transition(
+        3, 3,
         <<~SEED,
           .O.
           .O.
@@ -71,6 +76,7 @@ module CellularAutomata
 
     def test_glider
       assert_transition(
+        4, 4,
         <<~SEED,
           .O..
           ..O.
@@ -89,8 +95,13 @@ module CellularAutomata
 
   private
 
-    def assert_transition(seed, next_state)
-      grid = CellularAutomata::Grid.new(rules: CellularAutomata::Rules::Life, seed: seed.strip)
+    def assert_transition(width, height, seed, next_state)
+      grid = CellularAutomata::Grid.new(
+        rules: CellularAutomata::Rules::Life,
+        seed: seed.strip,
+        width: width,
+        height: height
+      )
       assert_equal(next_state.strip, grid.next)
     end
   end
