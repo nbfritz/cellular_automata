@@ -90,16 +90,17 @@ task :run do
     puts "Please run with a SEED variable set to one of:\n#{SEEDS.keys.join(", ")}"
     exit
   end
-  require "life"
+  require "cellular_automata"
 
-  world = Life::World.from_s(seed)
+  grid = CellularAutomata::Grid.from_s(seed)
+  game = CellularAutomata::Game.new(rules: CellularAutomata::Rules::Life, grid: grid)
 
   generation = 0
   while true
     puts "\e[H\e[2J" # clear screen
     puts "Generation: #{generation += 1}"
-    puts world
-    world = world.next
+    puts game.grid.to_s 
+    game.next
     sleep delay
   end
 end

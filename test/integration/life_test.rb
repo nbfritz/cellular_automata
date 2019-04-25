@@ -3,12 +3,11 @@ require "test_helper"
 module CellularAutomata
   class LifeTest < Minitest::Test
     def test_birth
-      assert_transition(
-        3, 2,
-        <<~SEED,
+      assert_transition( 3, 2,
+        <<~GRID,
           OO.
           O..
-        SEED
+        GRID
         <<~GRID
           OO.
           OO.
@@ -19,10 +18,10 @@ module CellularAutomata
     def test_stability
       assert_transition(
         3, 2,
-        <<~SEED,
+        <<~GRID,
           OO.
           OO.
-        SEED
+        GRID
         <<~GRID,
           OO.
           OO.
@@ -33,10 +32,10 @@ module CellularAutomata
     def test_overcrowding
       assert_transition(
         3, 2,
-        <<~SEED,
+        <<~GRID,
           OOO
           OOO
-        SEED
+        GRID
         <<~GRID.strip,
           O.O
           O.O
@@ -47,10 +46,10 @@ module CellularAutomata
     def test_underpopulation
       assert_transition(
         3, 2,
-        <<~SEED,
+        <<~GRID,
           .O.
           .O.
-        SEED
+        GRID
         <<~GRID
           ...
           ...
@@ -61,11 +60,11 @@ module CellularAutomata
     def test_blinker
       assert_transition(
         3, 3,
-        <<~SEED,
+        <<~GRID,
           .O.
           .O.
           .O.
-        SEED
+        GRID
         <<~GRID
           ...
           OOO
@@ -77,12 +76,12 @@ module CellularAutomata
     def test_glider
       assert_transition(
         4, 4,
-        <<~SEED,
+        <<~GRID,
           .O..
           ..O.
           OOO.
           ....
-        SEED
+        GRID
         <<~GRID
           ....
           O.O.
@@ -96,13 +95,10 @@ module CellularAutomata
   private
 
     def assert_transition(width, height, seed, next_state)
-      grid = CellularAutomata::Grid.new(
-        rules: CellularAutomata::Rules::Life,
-        seed: seed.strip,
-        width: width,
-        height: height
-      )
-      assert_equal(next_state.strip, grid.next)
+      grid = CellularAutomata::Grid.new(width: width, height: height)
+      game = Game.new(rules: CellularAutomata::Rules::Life, grid: grid)
+      game.plant_seed(seed)
+      assert_equal(next_state.strip, game.next.to_s)
     end
   end
 end
