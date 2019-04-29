@@ -7,20 +7,11 @@ module CellularAutomata
     end
 
     def next
-      new_data = grid.height.times.with_object([]) do |y, new_data|
-        new_data << grid.width.times.with_object([]) do |x, row|
-          row << rules.call(current: grid[x, y], neighbors: grid.neighbors(x, y))
-        end
+      new_grid = grid.clone
+      grid.each_cell do |val, x, y|
+        new_grid[x, y] = rules.call(current: grid[x, y], neighbors: grid.neighbors(x, y))
       end
-      @grid = Grid.from_array(new_data)
-    end
-
-    def plant_seed(seed)
-      seed.strip.split("\n").each.with_index do |row, y|
-        row.each_char.with_index do |char, x|
-          grid[x, y] = char
-        end
-      end
+      @grid = new_grid
     end
   end
 end

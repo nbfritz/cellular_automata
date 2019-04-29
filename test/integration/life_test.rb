@@ -95,9 +95,10 @@ module CellularAutomata
   private
 
     def assert_transition(width, height, seed, next_state)
-      grid = CellularAutomata::Grid.new(width: width, height: height)
-      game = Game.new(rules: CellularAutomata::Rules::Life, grid: grid)
-      game.plant_seed(seed)
+      grid = Grid.new(width: width, height: height)
+      grid.overlay(0, 0, Grid.from_s(seed))
+
+      game = Game.new(rules: Rules::Life, grid: grid)
       assert_equal(next_state.strip, game.next.to_s)
     end
   end

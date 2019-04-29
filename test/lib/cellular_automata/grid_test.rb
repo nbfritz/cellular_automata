@@ -36,11 +36,7 @@ module CellularAutomata
 
 
     def test_bracket_notation
-      grid = Grid.from_s(<<~GRID)
-        123
-        456
-        789
-      GRID
+      grid = numbered_grid
 
       assert_equal("1", grid[ 0,  0])
       assert_equal("2", grid[ 1,  0])
@@ -63,11 +59,7 @@ module CellularAutomata
     end
 
     def test_neighbors
-      grid = Grid.from_s(<<~GRID)
-        123
-        456
-        789
-      GRID
+      grid = numbered_grid
 
       assert_equal(["1", "2", "3", "4", "6", "7", "8", "9"], grid.neighbors(1, 1))
       assert_equal([nil, nil, nil, nil, "2", nil, "4", "5"], grid.neighbors(0, 0))
@@ -75,11 +67,7 @@ module CellularAutomata
     end
 
     def test_apply_transformation
-      grid = Grid.from_s(<<~GRID)
-        123
-        456
-        789
-      GRID
+      grid = numbered_grid
 
       assert_equal(["1", "2", "4"], grid.apply_transformation(0, 0, [[ 0, 0], [1, 0], [0, 1]]))
       assert_equal([nil, "3", "7"], grid.apply_transformation(0, 0, [[-2, 0], [2, 0], [0, 2]]))
@@ -102,10 +90,56 @@ module CellularAutomata
       assert_equal("~~~", grid.to_s)
     end
 
+    def test_each_cell
+      result = []
+      numbered_grid.each_cell { |v, x, y| result << "#{x},#{y}:#{v}" }
+
+      assert_equal(
+        ["0,0:1", "1,0:2", "2,0:3", "0,1:4", "1,1:5", "2,1:6", "0,2:7", "1,2:8", "2,2:9"], 
+        result
+      )
+    end
+
+    def test_each_cell_with_chained_enumerator
+      result = numbered_grid.each_cell.with_object([]) { |(v, x, y), arr| arr << v }
+      assert_equal(%w(1 2 3 4 5 6 7 8 9), result)
+    end
+
+    def test_duplication
+      grid = numbered_grid
+      other = grid.clone
+
+      other[0, 0] = "*"
+      refute_equal(grid[0, 0], other[0, 0])
+    end
+
+    def test_overlay
+      grid = numbered_grid
+      seed = Grid.from_s(<<~SEED)
+        AB
+        CD
+      SEED
+
+      grid.overlay(1, 1, seed)
+      assert_equal(<<~GRID.strip, grid.to_s)
+        123
+        4AB
+        7CD
+      GRID
+    end
+
   private
 
     def rules_mock
       @rules_mock ||= ->(**args) {}
+    end
+
+    def numbered_grid
+      grid = Grid.from_array([
+        ["1", "2", "3"],
+        ["4", "5", "6"],
+        ["7", "8", "9"]
+      ])
     end
   end
 end

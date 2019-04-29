@@ -46,6 +46,30 @@ module CellularAutomata
     def apply_transformation(origin_x, origin_y, transformation)
       transformation.map { |(x_offset, y_offset)| self[origin_x + x_offset, origin_y + y_offset] }
     end
+
+    def each_cell
+      return enum_for(:each_cell) unless block_given?
+
+      @data.each.with_index do |row, y|
+        row.each.with_index do |cell, x|
+          yield(cell, x, y)
+        end
+      end
+    end
+
+    def overlay(origin_x, origin_y, other)
+      other.each_cell do |val, offset_x, offset_y|
+        self[origin_x + offset_x, origin_y + offset_y] = val
+      end
+    end
+
+  private
+
+    # required to prevent issues when cloning @data's sub-arrays.
+    def initialize_copy(other)
+      super
+      @data = @data.map(&:clone)
+    end
   end
 end
 

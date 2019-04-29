@@ -20,28 +20,6 @@ module CellularAutomata
       end
     end
 
-    def test_plant_seed
-      grid = Grid.new(width: 3, height: 3)
-      game = Game.new(rules: rules_mock, grid: grid)
-
-      assert_equal(<<~GRID.strip, game.grid.to_s)
-        ...
-        ...
-        ...
-      GRID
- 
-      game.plant_seed(<<~SEED)
-        OO
-        OO
-      SEED
-
-      assert_equal(<<~GRID.strip, game.grid.to_s)
-        OO.
-        OO.
-        ...
-      GRID
-    end
-
   private
 
     def rules_mock
